@@ -8,12 +8,18 @@ const projectSchema = new mongoose.Schema({
 
   collaborators: [
     {
-      userId: { type: String, required: true }, // GitHub ID here
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      githubId: { type: String, required: true }, // GitHub ID here
       role: {
         type: String,
         enum: ["owner", "collaborator"],
         default: "collaborator",
       },
+      _id: false,
     },
   ],
 

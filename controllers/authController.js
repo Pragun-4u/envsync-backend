@@ -32,13 +32,12 @@ export const authController = {
           avatarUrl: userData.avatar_url,
           name: userData.name,
           email: userData.email,
+          location: userData.location,
         });
       }
 
       // 3. Store encrypted token temporarily for polling (in-memory or Redis, not just in the authService instance)
       authService.setCurrentUser({ user, encryptedToken });
-
-      console.log({ user, encryptedToken });
 
       // 4. Return success page
       res.send(`

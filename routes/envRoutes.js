@@ -7,5 +7,10 @@ const router = Router();
 router.post("/push", authMiddleware, envSyncController.push);
 router.get("/projects/by-git-url", projectController.getProjectByGitUrl);
 router.post("/projects", authMiddleware, projectController.createProject);
+router.get(
+  "/projects/by-token",
+  authMiddleware,
+  projectController.getProjectByToken
+);
 
 export default router;

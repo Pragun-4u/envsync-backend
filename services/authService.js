@@ -69,12 +69,13 @@ class AuthService {
     return { userData, encryptedToken };
   }
 
-  setCurrentUser(user, encryptedToken) {
+  setCurrentUser({ user, encryptedToken }) {
     this.currentUser = {
       githubId: user.githubId,
       username: user.username,
       avatarUrl: user.avatarUrl,
       name: user.name,
+      location: user.location,
       email: user.email,
       accessToken: encryptedToken,
     };
