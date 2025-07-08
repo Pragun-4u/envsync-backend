@@ -29,6 +29,7 @@ const projectSchema = new mongoose.Schema({
       encryptedEnvData: { type: String, required: true },
       initializationVector: { type: String, required: true },
       lastSyncedAt: { type: Date, default: Date.now },
+      _id: false,
     },
   ],
 });

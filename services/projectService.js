@@ -1,8 +1,13 @@
 // services/projectService.js
 import projectModel from "../models/Project.js";
 import crypto from "crypto";
+import ProjectRepository from "../repository/projectRepository.js";
 
 class ProjectService {
+  constructor() {
+    this.projectRepository = new ProjectRepository();
+  }
+
   async createProject({ projectName, gitRemoteUrl, githubId, userId }) {
     const projectToken = crypto.randomBytes(32).toString("hex");
 
@@ -24,11 +29,31 @@ class ProjectService {
   }
 
   async findByProjectToken(projectToken) {
-    return await projectModel.findOne({ projectToken });
+    try {
+      return await projectModel.findOne({ projectToken });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async findByProjectId(projectId) {
+    try {
+      const project = await this.projectRepository.getProjectByProjectId(
+        projectId
+      );
+      return project;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   async findByGitUrl(gitUrl) {
-    return await projectModel.findOne({ gitRemoteUrl: gitUrl });
+    try {
+      return await projectModel.findOne({ gitRemoteUrl: gitUrl });
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 
