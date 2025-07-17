@@ -3,8 +3,14 @@ import projectService from "../services/projectService.js";
 export const envSyncController = {
   push: async (req, res) => {
     try {
-      const { projectId, profileName, encryptedEnvData, initializationVector } =
-        req.body;
+      const {
+        projectId,
+        profileName,
+        encryptedEnvData,
+        initializationVector,
+        salt,
+        authTag,
+      } = req.body;
 
       if (
         !projectId ||
@@ -38,12 +44,16 @@ export const envSyncController = {
       if (environment) {
         environment.encryptedEnvData = encryptedEnvData;
         environment.initializationVector = initializationVector;
+        environment.salt = salt;
+        environment.authTag = authTag;
         environment.lastSyncedAt = new Date();
       } else {
         project.environments.push({
           profileName,
           encryptedEnvData,
           initializationVector,
+          salt,
+          authTag,
         });
       }
       const response = await project.save();
