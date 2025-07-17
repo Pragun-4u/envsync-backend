@@ -1,5 +1,6 @@
 import envService from "../services/envService.js";
 import projectService from "../services/projectService.js";
+
 export const envSyncController = {
   push: async (req, res) => {
     try {
@@ -21,50 +22,44 @@ export const envSyncController = {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
-      const project = await projectService.findByProjectId(projectId);
-
-      if (!project) {
-        return res.status(404).json({ error: "Project not found" });
-      }
-
-      if (
-        !project.collaborators.some(
-          (collab) => collab.userId.toString() === req.user.id.toString()
-        )
-      ) {
-        return res
-          .status(403)
-          .json({ error: "You are not a collaborator on this project" });
-      }
-
-      const environment = project.environments.find(
-        (env) => env.profileName === profileName
+      const response = await envService.push(
+        projectId,
+        profileName,
+        encryptedEnvData,
+        initializationVector,
+        salt,
+        authTag
       );
 
-      if (environment) {
-        environment.encryptedEnvData = encryptedEnvData;
-        environment.initializationVector = initializationVector;
-        environment.salt = salt;
-        environment.authTag = authTag;
-        environment.lastSyncedAt = new Date();
-      } else {
-        project.environments.push({
-          profileName,
-          encryptedEnvData,
-          initializationVector,
-          salt,
-          authTag,
+      res
+        .status(200)
+        .json({
+          message: "Environment variables pushed successfully",
+          response,
         });
-      }
-      const response = await project.save();
-
-      // Implement your push logic here
-
-      console.log("Response:", response);
-      res.json({ msg: "Pushed successfully" });
     } catch (error) {
       console.error("Error pushing environment variables:", error.message);
       res.status(500).json({ error: "Failed to push environment variables" });
+    }
+  },
+
+  pull: async (req, res) => {
+    try {
+      const { projectId, profileName } = req.body;
+
+      if (!projectId || !profileName) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const response = await envService.pull(projectId, profileName);
+
+      res.status(200).json({
+        message: "Pulled successfully the environment variables",
+        response,
+      });
+    } catch (error) {
+      console.error("Error pulling environment variables:", error.message);
+      res.status(500).json({ error: "Failed to pull environment variables" });
     }
   },
 };
